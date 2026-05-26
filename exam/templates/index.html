@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title></title>
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+
+<body>
+
+  <header>
+    <h1>MyExam</h1>
+    <div class="user">Welcome, <span class="span">{{request.user.first_name}}</span>
+      <a href="{% url "logout" %}" class="btn1">logout </a>
+      <a href="{% url "logout" %}" class="btn1">Admin </a>
+    </div>
+
+
+  </header>
+
+  <div class="container">
+    <section class="hero">
+      <div class="hero-text">
+        <h2>Online Examination Portal</h2>
+        <p>
+          Attempt secure, timed exams with instant result evaluation.
+          Designed for students, teachers, and institutions.
+        </p>
+
+        <div class="hero-actions">
+          {% if exam %}
+          <a href="{% url 'instructions' exam.id %}" class="btn">Start Exam</a>
+          {% else %}
+          <p>No exam available</p>
+          {% endif %}
+          <a href="#" class="btn">View Results</a>
+        </div>
+
+        
+      </div>
+      <div class="hero-img">
+        <img src="/static/image/img1.jpg" alt="exam" style="width:100%" />
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat-card">
+        <h3>50+</h3>
+        <p>MCQ Questions</p>
+      </div>
+      <div class="stat-card">
+        <h3>60 min</h3>
+        <p>Time Limit</p>
+      </div>
+      <div class="stat-card">
+        <h3>Instant</h3>
+        <p>Result & Email</p>
+      </div>
+    </section>
+
+    <section class="rules_card">
+      <h3>Rules & Regulation</h3>
+        <div class="card">
+            <img src="/static/image/rules.jpg" alt="exam" style="width: 100%;">
+
+          <div class="hero-text">
+            <h2>be remembered and noted </h2>
+            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minima iste est cupiditate, doloremque, porro
+              quas modi harum quo ullam laborum suscipit minus animi! Saepe incidunt repellendus consequatur non
+              reiciendis eveniet illum impedit accusamus! Numquam autem ipsa perferendis modi optio in, vitae sed
+              quisquam explicabo, nihil provident molestiae. Veniam, labore voluptate.</p>
+          </div>
+        </div>
+    </section>
+  </div>
+
+  <footer>
+    © 2026 MyExam · made by Md.saif 💖
+  </footer>
+
+</body>
+
+</html>

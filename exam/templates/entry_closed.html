@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'entry_closed.css' %}">
+  <title>Entry Closed</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>⛔ Entry Closed</h1>
+
+        <p>You are late for this exam.</p>
+
+        <p>
+            Entry closed at:
+            <span class="time">
+                {{ entry_end }}
+            </span>
+        </p>
+
+        <a href="{% url 'index' %}" class="btn">Go to Dashboard</a>
+    </div>
+
+</body>
+</html>

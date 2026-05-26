@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ exam.title }} - Instructions</title>
+   <link rel="stylesheet" href="{% static 'instruction.css' %}">
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>{{ exam.title }}</h1>
+
+  <div class="exam-info">
+    <div>Duration: {{ exam.duration }} Minutes</div>
+    <div>Questions: {{ exam.question_set.count }}</div>
+  </div>
+
+  <div class="instructions">
+    <h3>Important Instructions:</h3>
+
+    <ul>
+      <li>Read all questions carefully before answering.</li>
+      <li>Each question carries equal marks.</li>
+      <li>Do not refresh or close the browser during the exam.</li>
+      <li>The exam will auto-submit when time is over.</li>
+      <li>Once entry window closes, you cannot start the exam.</li>
+      <li>Ensure stable internet connection.</li>
+    </ul>
+  </div>
+
+  <div class="timer-box">
+    Entry closes in: <span id="timer"></span>
+  </div>
+
+  <button id="startBtn" class="start-btn" onclick="startExam()">
+    Start Exam
+  </button>
+
+  <div class="footer-note">
+    Click "Start Exam" only when you are ready.
+  </div>
+
+</div>
+
+<script>
+
+let entryEnd = new Date("{{ entry_end|date:'c' }}").getTime();
+
+let timer = setInterval(function() {
+
+  let now = new Date().getTime();
+  let diff = entryEnd - now;
+
+  if (diff <= 0) {
+    clearInterval(timer);
+    document.getElementById("timer").innerHTML = "Entry Closed";
+    document.getElementById("startBtn").disabled = true;
+    return;
+  }
+
+  let minutes = Math.floor(diff / (1000 * 60));
+  let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById("timer").innerHTML =
+    minutes + "m " + seconds + "s";
+
+}, 1000);
+
+function startExam() {
+  window.location.href = "{% url 'exam' exam.id %}";
+}
+
+</script>
+
+</body>
+</html>

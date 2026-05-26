@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{% static 'exam/exam.css' %}">
+  <title>Exam UI</title>
+</head>
+
+<body>
+  <!-- Main Question Area -->
+  <form id="examForm" method="POST">
+    {% csrf_token %}
+    <div class="container">
+      <div class="main">
+        {% for q in questions %}
+        <div class="question-box question" id="question-{{forloop.counter }}" style="display:none;">
+          <h3>{{ forloop.counter }}</h3>
+          <p>{{ q.question }}</p>
+          <div class="options">
+            <label>
+              <input type="radio" name="q{{ q.id }}" value="1" onclick="saveAnswer({{forloop.counter}})">{{ q.option1 }}
+            </label><br>
+            <label>
+              <input type="radio" name="q{{ q.id }}" value="2" onclick="saveAnswer({{forloop.counter}})">{{ q.option2 }}
+            </label><br>
+            <label>
+              <input type="radio" name="q{{ q.id }}" value="3" onclick="saveAnswer({{forloop.counter}})">{{ q.option3 }}
+            </label><br>
+            <label>
+              <input type="radio" name="q{{ q.id }}" value="4" onclick="saveAnswer({{forloop.counter}})">{{ q.option4 }}
+            </label><br>
+          </div>
+        </div>
+        {% endfor %}
+        <div class="buttons">
+          <button type="button" class="save" onclick="saveAnswer(currentQuestion)">Save Answer</button>
+          <button type="button" onclick="prevQuestion()">Previous</button>
+          <button type="button" class="review" onclick="skipQuestion(currentQuestion)">Mark for Review</button>
+          <button type="button" onclick="nextQuestion()">Next</button>
+          <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit</button>
+        </div>
+      </div>
+
+      <!-- Sidebar (Right) -->
+      <div class="sidebar">
+        <div class="user-section">
+          <div class="username">
+            <h3>good luck</h3>
+            {{request.user.first_name}}
+          </div>
+          <div class="timer">
+            Time Left: <span id="time"></span>
+          </div>
+          <br>
+
+          <label class="calc-toggle">
+            <input type="checkbox" id="calcToggle" onchange="toggleCalculator()">
+            Enable Calculator
+          </label>
+        </div>
+
+        <h4>Questions</h4>
+
+        <!-- Legend / Notice -->
+        <div style="background:#111; padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
+          <div style="display:flex; align-items:center; margin-bottom:4px;">
+            <span
+              style="width:14px; height:14px; background:#ccc; display:inline-block; margin-right:6px; border-radius:3px;"></span>
+            Not Answered
+          </div>
+          <div style="display:flex; align-items:center; margin-bottom:4px;">
+            <span
+              style="width:14px; height:14px; background:#4caf50; display:inline-block; margin-right:6px; border-radius:3px;"></span>
+            Answered
+          </div>
+          <div style="display:flex; align-items:center;">
+            <span
+              style="width:14px; height:14px; background:#ff9800; display:inline-block; margin-right:6px; border-radius:3px;"></span>
+            Marked for Review
+          </div>
+        </div>
+        <div class="palette" id="palette">
+          {% for q in questions %}
+          <div id="qbox-{{ forloop.counter }}" class="q-btn" onclick="goToQuestion({{ forloop.counter }})">{{ forloop.counter }}
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Calculator -->
+        <div class="calculator" id="calculator">
+          <input type="text" id="calcDisplay" readonly>
+          <div class="calc-buttons">
+            <button type="button" onclick="press('7')">7</button>
+            <button type="button" onclick="press('8')">8</button>
+            <button type="button" onclick="press('9')">9</button>
+            <button type="button" onclick="press('/')">/</button>
+            <button type="button" onclick="press('4')">4</button>
+            <button type="button" onclick="press('5')">5</button>
+            <button type="button" onclick="press('6')">6</button>
+            <button type="button" onclick="press('*')">*</button>
+            <button type="button" onclick="press('1')">1</button>
+            <button type="button" onclick="press('2')">2</button>
+            <button type="button" onclick="press('3')">3</button>
+            <button type="button" onclick="press('-')">-</button>
+            <button type="button" onclick="press('0')">0</button>
+            <button type="button" onclick="press('.')">.</button>
+            <button type="button" onclick="calculate()">=</button>
+            <button type="button" onclick="press('+')">+</button>
+            <button type="button" onclick="clearCalc()">C</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script>
+
+    // window.onload = function () {
+    //   document.getElementById("submitBtn").disabled = true;
+    // };
+
+    let currentQuestion = 1;
+    let totalQuestions = {{ questions| length }};
+    let status = {};
+
+    function showQuestion(n) {
+
+      document.querySelectorAll(".question")
+        .forEach(q => q.style.display = "none");
+
+      document.getElementById("question-" + n)
+        .style.display = "block";
+
+      currentQuestion = n;
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < totalQuestions) {
+        showQuestion(currentQuestion + 1);
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 1) {
+        showQuestion(currentQuestion - 1);
+      }
+    }
+
+    function goToQuestion(n) {
+      showQuestion(n);
+    }
+
+    function saveAnswer(n) {
+      status[n] = "answered";
+
+      let box = document.getElementById("qbox-" + n);
+
+      box.classList.remove("skipped");
+      box.classList.add("answered");
+    }
+
+    function skipQuestion(n) {
+      status[n] = "skipped";
+
+      let box = document.getElementById("qbox-" + n);
+
+      box.classList.remove("answered");
+      box.classList.add("skipped");
+    }
+
+    // First question show on load
+    showQuestion(1);
+
+    // Admin se aaya hua time (minutes)
+    let endTime = new Date("{{ end_time|escapejs }}").getTime();
+
+    function updateTimer() {
+      let now = new Date().getTime();
+      let timeLeft = Math.floor((endTime - now) / 1000);
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        
+        document.getElementById("time").innerText = "00:00";
+        alert("Time is up! please sumit your exam.");
+
+        // submit button enable 
+        let submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = false;
+        submitBtn.classList.add("active");
+
+        document.querySelectorAll("button").forEach(el => {
+          if (el.id !== 'submitBtn') {
+            el.disabled = true;
+          }
+        });
+        return;
+      }
+      // if(timeLeft < 0) timeLeft = 0;
+
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+
+      document.getElementById("time").innerText =
+        minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    let timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // first call
+
+    function toggleCalculator() {
+      let calc = document.getElementById("calculator");
+      let toggle = document.getElementById("calcToggle");
+
+      if (toggle.checked) {
+        calc.style.display = "block";
+      } else {
+        calc.style.display = "none";
+      }
+    }
+
+    function press(val) {
+      document.getElementById("calcDisplay").value += val;
+    }
+
+    function calculate() {
+      try {
+        document.getElementById("calcDisplay").value =
+          eval(document.getElementById("calcDisplay").value);
+      } catch {
+        alert("Invalid Calculation");
+      }
+    }
+
+    function clearCalc() {
+      document.getElementById("calcDisplay").value = "";
+    }
+    console.log("END:", endTime);
+    console.log("NOW:", new Date().getTime());
+
+  </script>
+
+
+</body>
+
+</html>

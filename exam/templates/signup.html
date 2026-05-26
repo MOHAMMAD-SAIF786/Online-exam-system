@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <div class="card">
+        <h2>Create Account ✨</h2>
+        <p>Sign up to get started</p>
+
+        {% if messages %}
+          {% for message in messages %}
+           <p style="color:red">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="input-box">
+                <label>Full Name</label>
+                <input type="text" name="full_name" placeholder="Enter your name" required  />
+            </div>
+
+            <div class="input-box">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="input-box">
+                <label>Password</label>
+                <input type="password" name="pass1" placeholder="Create password" required />
+            </div>
+
+            <div class="input-box">
+                <label>Confirm Password</label>
+                <input type="password" name="pass2" placeholder="Confirm password" required />
+            </div>
+
+            <button class="btn" type="submit">Sign Up</button>
+
+            <div class="extra">
+                Already have an account? <a href="{% url "login" %}">Login</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

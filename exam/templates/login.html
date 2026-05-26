@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+</head>
+
+<body>
+    <div class="card">
+        <h2>Welcome Back 👋</h2>
+        {% if messages %}
+        {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+        {%endif%}
+        <p>Login to your account</p>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="input-box">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email"  required />
+            </div>
+
+            <div class="input-box">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required />
+            </div>
+
+            <div class="options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="#">Forgot password?</a>
+            </div>
+
+            <button class="btn">Login</button>
+
+            <div class="extra">
+                Don’t have an account? <a href="{% url "signup" %}">Sign up</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
